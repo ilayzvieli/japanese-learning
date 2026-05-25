@@ -61,12 +61,32 @@ function GrammarCard({ point, expanded, onToggle, showFurigana }: {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1 }}>
           <div style={{
-            fontFamily: "'Noto Sans JP', sans-serif",
-            fontSize: 18, fontWeight: 600, color: "var(--color-accent)",
-            background: "rgba(201,168,76,0.1)", padding: "4px 12px", borderRadius: 8,
-            whiteSpace: "nowrap",
+            background: "rgba(201,168,76,0.1)", padding: "6px 12px", borderRadius: 8,
+            whiteSpace: "nowrap", textAlign: "center",
           }}>
-            {point.pattern}
+            <div style={{ fontFamily: "'Noto Sans JP', sans-serif", fontSize: 18, fontWeight: 600, color: "var(--color-accent)", lineHeight: 1.2 }}>
+              {point.pattern}
+            </div>
+            <div style={{ fontSize: 10, color: "var(--color-accent)", opacity: 0.7, marginTop: 2, letterSpacing: "0.04em" }}>
+              {point.pattern
+                .replace(/〜/g, "~")
+                .replace(/は/g, "wa").replace(/を/g, "wo").replace(/に/g, "ni")
+                .replace(/で/g, "de").replace(/が/g, "ga").replace(/も/g, "mo")
+                .replace(/の/g, "no").replace(/と/g, "to").replace(/から/g, "kara")
+                .replace(/まで/g, "made").replace(/ため/g, "tame").replace(/って/g, "tte")
+                .replace(/ている/g, "te iru").replace(/てから/g, "te kara")
+                .replace(/てみる/g, "te miru").replace(/てしまう/g, "te shimau")
+                .replace(/てもいい/g, "te mo ii").replace(/てはいけない/g, "te wa ikenai")
+                .replace(/たい/g, "tai").replace(/ない/g, "nai").replace(/ます/g, "masu")
+                .replace(/です/g, "desu").replace(/ません/g, "masen").replace(/ましょう/g, "mashou")
+                .replace(/かもしれない/g, "kamo shirenai").replace(/はずだ/g, "hazu da")
+                .replace(/そうだ/g, "sou da").replace(/らしい/g, "rashii")
+                .replace(/ようになる/g, "you ni naru").replace(/ようにする/g, "you ni suru")
+                .replace(/ために/g, "tame ni").replace(/ばかり/g, "bakari")
+                .replace(/わけだ/g, "wake da").replace(/さえ/g, "sae")
+                .replace(/に対して/g, "ni taishite").replace(/にもかかわらず/g, "ni mo kakawarazu")
+              }
+            </div>
           </div>
           <div>
             <div style={{ fontSize: 15, fontWeight: 600, color: "var(--color-foreground)" }}>{point.meaning}</div>

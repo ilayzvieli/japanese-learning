@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { HIRAGANA, KATAKANA, type KanaChar } from "@/data/japaneseData";
 
 const BASIC_ROWS = ["a", "k", "s", "t", "n", "h", "m", "y", "r", "w", "n2"];
@@ -52,6 +52,10 @@ function QuizMode({ chars, onExit }: { chars: KanaChar[]; onExit: () => void }) 
   const [done, setDone] = useState(false);
   const shuffled = useState(() => [...chars].sort(() => Math.random() - 0.5).slice(0, 20))[0];
   const current = shuffled[index];
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, [index, feedback]);
 
   const speak = (text: string) => {
     if ("speechSynthesis" in window) {
@@ -138,6 +142,7 @@ function QuizMode({ chars, onExit }: { chars: KanaChar[]; onExit: () => void }) 
       {/* Input */}
       <div style={{ display: "flex", gap: 8 }}>
         <input
+          ref={inputRef}
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}

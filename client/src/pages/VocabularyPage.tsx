@@ -208,32 +208,42 @@ export default function VocabularyPage() {
         </div>
 
         {/* Filters */}
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {CATEGORIES.map(cat => (
-              <button key={cat} onClick={() => setCategory(cat)} style={{
-                padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500,
-                background: category === cat ? "rgba(201,168,76,0.15)" : "transparent",
-                border: `1px solid ${category === cat ? "rgba(201,168,76,0.4)" : "var(--color-border)"}`,
-                color: category === cat ? "var(--color-accent)" : "var(--color-foreground-muted)",
-                cursor: "pointer", textTransform: "capitalize",
-              }}>
-                {cat}
-              </button>
-            ))}
+        <div style={{ marginBottom: 24, display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* JLPT Level filter */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-foreground-subtle)", textTransform: "uppercase", letterSpacing: "0.08em", minWidth: 60 }}>Level</span>
+            <div style={{ display: "flex", gap: 6 }}>
+              {LEVELS.map(l => (
+                <button key={l} onClick={() => setLevel(l)} style={{
+                  padding: "5px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500,
+                  background: level === l ? "rgba(44,157,143,0.15)" : "transparent",
+                  border: `1px solid ${level === l ? "rgba(44,157,143,0.4)" : "var(--color-border)"}`,
+                  color: level === l ? "var(--color-teal)" : "var(--color-foreground-muted)",
+                  cursor: "pointer",
+                }}>
+                  {l}
+                </button>
+              ))}
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 6 }}>
-            {LEVELS.map(l => (
-              <button key={l} onClick={() => setLevel(l)} style={{
-                padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500,
-                background: level === l ? "rgba(44,157,143,0.15)" : "transparent",
-                border: `1px solid ${level === l ? "rgba(44,157,143,0.4)" : "var(--color-border)"}`,
-                color: level === l ? "var(--color-teal)" : "var(--color-foreground-muted)",
-                cursor: "pointer",
-              }}>
-                {l}
-              </button>
-            ))}
+          {/* Divider */}
+          <div style={{ height: 1, background: "var(--color-border)", margin: "2px 0" }} />
+          {/* Category filter */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-foreground-subtle)", textTransform: "uppercase", letterSpacing: "0.08em", minWidth: 60 }}>Category</span>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {CATEGORIES.map(cat => (
+                <button key={cat} onClick={() => setCategory(cat)} style={{
+                  padding: "5px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500,
+                  background: category === cat ? "rgba(201,168,76,0.15)" : "transparent",
+                  border: `1px solid ${category === cat ? "rgba(201,168,76,0.4)" : "var(--color-border)"}`,
+                  color: category === cat ? "var(--color-accent)" : "var(--color-foreground-muted)",
+                  cursor: "pointer", textTransform: "capitalize",
+                }}>
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

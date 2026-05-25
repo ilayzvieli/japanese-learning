@@ -36,8 +36,8 @@ function VocabPopup({ word, reading, meaning, onClose }: { word: string; reading
   );
 }
 
-function ParagraphBlock({ para, showFurigana, showTranslation }: {
-  para: StoryParagraph; showFurigana: boolean; showTranslation: boolean;
+function ParagraphBlock({ para, showFurigana, showRomaji, showTranslation }: {
+  para: StoryParagraph; showFurigana: boolean; showRomaji: boolean; showTranslation: boolean;
 }) {
   const [popup, setPopup] = useState<{ word: string; reading: string; meaning: string } | null>(null);
   const speak = () => {
@@ -57,18 +57,20 @@ function ParagraphBlock({ para, showFurigana, showTranslation }: {
       {/* Japanese text */}
       <p style={{
         fontFamily: "'Noto Sans JP', sans-serif",
-        fontSize: 19, lineHeight: showFurigana ? 2.4 : 1.9,
+        fontSize: 19, lineHeight: (showFurigana || showRomaji) ? 2.6 : 1.9,
         color: "var(--color-foreground)", marginBottom: 8,
       }}>
         {showFurigana ? (
-          <ruby>
-            {para.japanese}
-            <rp>(</rp>
-            <rt style={{ fontSize: 11, color: "var(--color-accent)" }}>{para.furigana}</rt>
-            <rp>)</rp>
-          </ruby>
+          para.japanese.split(/(?<=[。、！？\s])|(?=[。、！？])/g).map((segment, i) => (
+            <ruby key={i}>{segment}<rt style={{ fontSize: 10, color: "var(--color-accent)" }}></rt></ruby>
+          ))
         ) : para.japanese}
       </p>
+      {showRomaji && (
+        <p style={{ fontSize: 13, color: "var(--color-foreground-subtle)", marginBottom: 8, fontStyle: "italic", lineHeight: 1.6 }}>
+          {para.furigana}
+        </p>
+      )}
 
       {/* Translation */}
       {showTranslation && (
@@ -117,6 +119,7 @@ function ParagraphBlock({ para, showFurigana, showTranslation }: {
 
 function StoryReader({ story, onBack }: { story: Story; onBack: () => void }) {
   const [showFurigana, setShowFurigana] = useState(true);
+  const [showRomaji, setShowRomaji] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
   const [finished, setFinished] = useState(false);
 
@@ -177,6 +180,7 @@ function StoryReader({ story, onBack }: { story: Story; onBack: () => void }) {
       }}>
         {[
           { label: showFurigana ? "Hide furigana" : "Show furigana", toggle: () => setShowFurigana(v => !v), active: showFurigana },
+          { label: showRomaji ? "Hide romaji" : "Show romaji", toggle: () => setShowRomaji(v => !v), active: showRomaji },
           { label: showTranslation ? "Hide translation" : "Show translation", toggle: () => setShowTranslation(v => !v), active: showTranslation },
         ].map(ctrl => (
           <button key={ctrl.label} onClick={ctrl.toggle} style={{
@@ -200,7 +204,7 @@ function StoryReader({ story, onBack }: { story: Story; onBack: () => void }) {
 
       {/* Paragraphs */}
       {story.paragraphs.map((para, i) => (
-        <ParagraphBlock key={i} para={para} showFurigana={showFurigana} showTranslation={showTranslation} />
+        <ParagraphBlock key={i} para={para} showFurigana={showFurigana} showRomaji={showRomaji} showTranslation={showTranslation} />
       ))}
 
       {/* Completion */}
