@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { STORIES, type Story, type StoryParagraph } from "@/data/japaneseData";
+import { kanaToRomaji } from "@/lib/kanaToRomaji";
 
 function VocabPopup({ word, reading, meaning, onClose }: { word: string; reading: string; meaning: string; onClose: () => void }) {
   const speak = () => {
@@ -76,7 +77,7 @@ function ParagraphBlock({ para, showFurigana, showRomaji, showTranslation }: {
       {/* Romaji line */}
       {showRomaji && (
         <p style={{ fontSize: 13, color: "var(--color-purple)", marginBottom: 8, fontStyle: "italic", lineHeight: 1.6 }}>
-          {para.furigana}
+          {kanaToRomaji(para.furigana)}
         </p>
       )}
 
