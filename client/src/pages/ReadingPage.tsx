@@ -54,20 +54,28 @@ function ParagraphBlock({ para, showFurigana, showRomaji, showTranslation }: {
       border: "1px solid var(--color-border)",
       marginBottom: 12,
     }}>
+      {/* Furigana line */}
+      {showFurigana && (
+        <div style={{
+          fontFamily: "'Noto Sans JP', sans-serif",
+          fontSize: 11, color: "var(--color-accent)",
+          marginBottom: 4, lineHeight: 1.6, letterSpacing: "0.05em",
+          wordBreak: "break-all",
+        }}>
+          {para.furigana}
+        </div>
+      )}
       {/* Japanese text */}
       <p style={{
         fontFamily: "'Noto Sans JP', sans-serif",
-        fontSize: 19, lineHeight: (showFurigana || showRomaji) ? 2.6 : 1.9,
+        fontSize: 19, lineHeight: 1.9,
         color: "var(--color-foreground)", marginBottom: 8,
       }}>
-        {showFurigana ? (
-          para.japanese.split(/(?<=[。、！？\s])|(?=[。、！？])/g).map((segment, i) => (
-            <ruby key={i}>{segment}<rt style={{ fontSize: 10, color: "var(--color-accent)" }}></rt></ruby>
-          ))
-        ) : para.japanese}
+        {para.japanese}
       </p>
+      {/* Romaji line */}
       {showRomaji && (
-        <p style={{ fontSize: 13, color: "var(--color-foreground-subtle)", marginBottom: 8, fontStyle: "italic", lineHeight: 1.6 }}>
+        <p style={{ fontSize: 13, color: "var(--color-purple)", marginBottom: 8, fontStyle: "italic", lineHeight: 1.6 }}>
           {para.furigana}
         </p>
       )}
