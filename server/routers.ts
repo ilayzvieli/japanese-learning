@@ -54,7 +54,6 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
-});
 
   // ─── Stories ───────────────────────────────────────────────────────────────
   stories: router({
