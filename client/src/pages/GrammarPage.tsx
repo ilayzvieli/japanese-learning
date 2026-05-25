@@ -68,42 +68,7 @@ function GrammarCard({ point, expanded, onToggle, showFurigana }: {
               {point.pattern}
             </div>
             <div style={{ fontSize: 10, color: "var(--color-accent)", opacity: 0.7, marginTop: 2, letterSpacing: "0.04em" }}>
-              {point.pattern
-                .replace(/〜/g, "~")
-                // long matches first to avoid partial replacements
-                .replace(/にもかかわらず/g, "ni mo kakawarazu")
-                .replace(/に対して/g, "ni taishite")
-                .replace(/かもしれない/g, "kamo shirenai")
-                .replace(/てはいけない/g, "te wa ikenai")
-                .replace(/ようになる/g, "you ni naru")
-                .replace(/ようにする/g, "you ni suru")
-                .replace(/てしまう/g, "te shimau")
-                .replace(/てもいい/g, "te mo ii")
-                .replace(/てから/g, "te kara")
-                .replace(/てみる/g, "te miru")
-                .replace(/ている/g, "te iru")
-                .replace(/ましょう/g, "mashou")
-                .replace(/はずだ/g, "hazu da")
-                .replace(/わけだ/g, "wake da")
-                .replace(/そうだ/g, "sou da")
-                .replace(/ために/g, "tame ni")
-                .replace(/ばかり/g, "bakari")
-                .replace(/ません/g, "masen")
-                .replace(/らしい/g, "rashii")
-                .replace(/たい/g, "tai")
-                .replace(/ない/g, "nai")
-                .replace(/ます/g, "masu")
-                .replace(/です/g, "desu")
-                .replace(/から/g, "kara")
-                .replace(/まで/g, "made")
-                .replace(/ため/g, "tame")
-                .replace(/って/g, "tte")
-                .replace(/さえ/g, "sae")
-                .replace(/は/g, "wa").replace(/を/g, "wo")
-                .replace(/に/g, "ni").replace(/で/g, "de")
-                .replace(/が/g, "ga").replace(/も/g, "mo")
-                .replace(/の/g, "no").replace(/と/g, "to")
-              }
+              {point.romaji}
             </div>
           </div>
           <div>
