@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
+import { trpc } from "@/lib/trpc";
 
 function StatCard({ label, value, icon, color }: { label: string; value: string | number; icon: string; color?: string }) {
   return (
@@ -71,6 +72,7 @@ function getGreeting() {
 export default function DashboardPage() {
   const { user } = useAuth();
   const greeting = getGreeting();
+  const { data: stats } = trpc.dashboard.getStats.useQuery(undefined, { enabled: !!user });
 
   if (!user) {
     return (
@@ -110,10 +112,10 @@ export default function DashboardPage() {
 
         {/* Quick Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 36 }}>
-          <StatCard label="Day streak" value="1" icon="🔥" color="#ef4444" />
-          <StatCard label="Words learned" value="0" icon="📚" color="var(--color-accent)" />
-          <StatCard label="Kana mastered" value="0" icon="🈳" color="var(--color-teal)" />
-          <StatCard label="Kanji learned" value="0" icon="🀄" color="var(--color-purple)" />
+          <StatCard label="Day streak" value={stats?.streak ?? 1} icon="🔥" color="#ef4444" />
+          <StatCard label="Words learned" value={stats?.wordsLearned ?? 0} icon="📚" color="var(--color-accent)" />
+          <StatCard label="Kana mastered" value={stats?.kanaLearned ?? 0} icon="🈳" color="var(--color-teal)" />
+          <StatCard label="Stories read" value={stats?.storiesRead ?? 0} icon="📖" color="var(--color-purple)" />
         </div>
 
         {/* Learning Path */}

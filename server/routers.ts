@@ -56,4 +56,25 @@ export const appRouter = router({
   }),
 });
 
+  // ─── Stories ───────────────────────────────────────────────────────────────
+  stories: router({
+    getProgress: protectedProcedure.query(async ({ ctx }) => {
+      return db.getStoryProgress(ctx.user.id);
+    }),
+    markComplete: protectedProcedure
+      .input(z.object({ storyId: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.markStoryComplete(ctx.user.id, input.storyId);
+        return { success: true };
+      }),
+  }),
+
+  // ─── Dashboard ─────────────────────────────────────────────────────────────
+  dashboard: router({
+    getStats: protectedProcedure.query(async ({ ctx }) => {
+      return db.getDashboardStats(ctx.user.id);
+    }),
+  }),
+});
+
 export type AppRouter = typeof appRouter;

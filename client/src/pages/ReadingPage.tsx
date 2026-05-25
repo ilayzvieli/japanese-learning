@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { STORIES, type Story, type StoryParagraph } from "@/data/japaneseData";
 import { kanaToRomaji } from "@/lib/kanaToRomaji";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/contexts/AuthContext";
 
 function VocabPopup({ word, reading, meaning, onClose }: { word: string; reading: string; meaning: string; onClose: () => void }) {
   const speak = () => {
@@ -131,6 +133,10 @@ function StoryReader({ story, onBack }: { story: Story; onBack: () => void }) {
   const [showRomaji, setShowRomaji] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
   const [finished, setFinished] = useState(false);
+  const { user } = useAuth();
+  const markComplete = trpc.stories.markComplete.useMutation();
+  const { data: progressData } = trpc.stories.getProgress.useQuery(undefined, { enabled: !!user });
+  const alreadyCompleted = progressData?.some(p => p.storyId === story.id && p.completed) ?? false;
 
   const speakAll = () => {
     if (!("speechSynthesis" in window)) return;
@@ -219,7 +225,7 @@ function StoryReader({ story, onBack }: { story: Story; onBack: () => void }) {
       {/* Completion */}
       {!finished ? (
         <div style={{ textAlign: "center", padding: "32px 0" }}>
-          <button onClick={() => setFinished(true)} style={{
+          <button onClick={() => { setFinished(true); if (user) markComplete.mutate({ storyId: story.id }); }} style={{
             padding: "12px 28px", borderRadius: 10, fontSize: 15, fontWeight: 600,
             background: "var(--color-accent)", color: "#1a1a1a", border: "none", cursor: "pointer",
           }}>

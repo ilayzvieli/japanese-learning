@@ -72,3 +72,14 @@ export const pronunciationAttempts = mysqlTable("pronunciation_attempts", {
   feedback: text("feedback"),
   attemptedAt: timestamp("attemptedAt").defaultNow().notNull(),
 });
+
+/**
+ * Story progress — tracks which stories users have completed
+ */
+export const storyProgress = mysqlTable("story_progress", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  storyId: varchar("storyId", { length: 64 }).notNull(),
+  completed: boolean("completed").default(false).notNull(),
+  completedAt: timestamp("completedAt").defaultNow().notNull(),
+});

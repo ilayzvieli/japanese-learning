@@ -1,6 +1,6 @@
 import { eq, and, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { users, kanaProgress, quizResults, vocabularySrs, pronunciationAttempts } from "../drizzle/schema";
+import { users, kanaProgress, quizResults, vocabularySrs, pronunciationAttempts, storyProgress } from "../drizzle/schema";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -128,6 +128,40 @@ export async function upsertVocabSrs(userId: number, wordId: string, quality: nu
   } else {
     await db.insert(vocabularySrs).values({ userId, wordId, easeFactor, interval, repetitions, nextReview, lastReviewed: new Date() });
   }
+}
+
+// ─── Story Progress ──────────────────────────────────────────────────────────
+
+export async function getStoryProgress(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(storyProgress).where(eq(storyProgress.userId, userId));
+}
+
+export async function markStoryComplete(userId: number, storyId: string) {
+  const db = await getDb();
+  if (!db) return;
+  const existing = await db.select().from(storyProgress)
+    .where(and(eq(storyProgress.userId, userId), eq(storyProgress.storyId, storyId))).limit(1);
+  if (existing.length === 0) {
+    await db.insert(storyProgress).values({ userId, storyId, completed: true, completedAt: new Date() });
+  }
+}
+
+export async function getDashboardStats(userId: number) {
+  const db = await getDb();
+  if (!db) return { kanaLearned: 0, wordsLearned: 0, storiesRead: 0, streak: 1 };
+  const [kana, vocab, stories] = await Promise.all([
+    db.select().from(kanaProgress).where(eq(kanaProgress.userId, userId)),
+    db.select().from(vocabularySrs).where(eq(vocabularySrs.userId, userId)),
+    db.select().from(storyProgress).where(and(eq(storyProgress.userId, userId), eq(storyProgress.completed, true))),
+  ]);
+  return {
+    kanaLearned: kana.length,
+    wordsLearned: vocab.filter(v => v.repetitions > 0).length,
+    storiesRead: stories.length,
+    streak: 1,
+  };
 }
 
 // ─── Pronunciation ───────────────────────────────────────────────────────────

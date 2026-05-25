@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { HIRAGANA, KATAKANA, type KanaChar } from "@/data/japaneseData";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BASIC_ROWS = ["a", "k", "s", "t", "n", "h", "m", "y", "r", "w", "n2"];
 const VOICED_ROWS = ["g", "z", "d", "b", "p"];
@@ -183,17 +185,35 @@ function KanaPage({ type }: { type: "hiragana" | "katakana" }) {
   const [quizMode, setQuizMode] = useState(false);
   const [learned, setLearned] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<KanaChar | null>(null);
+  const { user } = useAuth();
+  const { data: progressData } = trpc.kana.getProgress.useQuery(undefined, { enabled: !!user });
+  const updateProgress = trpc.kana.updateProgress.useMutation();
+
+  useEffect(() => {
+    if (progressData) {
+      const learnedChars = new Set(
+        progressData
+          .filter(p => p.type === type && (p.correctCount || 0) >= 1)
+          .map(p => p.character)
+      );
+      setLearned(learnedChars);
+    }
+  }, [progressData, type]);
 
   const basicChars = chars.filter(c => BASIC_ROWS.includes(c.row));
   const voicedChars = chars.filter(c => VOICED_ROWS.includes(c.row));
   const displayChars = showDakuten ? [...basicChars, ...voicedChars] : basicChars;
 
   const toggleLearned = (kana: string) => {
+    const wasLearned = learned.has(kana);
     setLearned(prev => {
       const next = new Set(prev);
       if (next.has(kana)) next.delete(kana); else next.add(kana);
       return next;
     });
+    if (user && !wasLearned) {
+      updateProgress.mutate({ character: kana, type, correct: true });
+    }
   };
 
   const speak = (text: string) => {

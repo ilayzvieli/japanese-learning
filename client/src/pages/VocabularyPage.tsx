@@ -1,10 +1,13 @@
 import { useState, useMemo } from "react";
 import { VOCABULARY, type VocabWord } from "@/data/japaneseData";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CATEGORIES = ["all", "verbs", "adjectives", "nouns", "time"];
 const LEVELS = ["all", "N5", "N4"];
 
-function FlashCard({ word, onRate }: { word: VocabWord; onRate: (q: number) => void }) {
+function FlashCard({ word, onRate, userId }: { word: VocabWord; onRate: (q: number) => void; userId?: number }) {
+  const updateSrs = trpc.vocab.updateSrs.useMutation();
   const [flipped, setFlipped] = useState(false);
 
   const speak = () => {
@@ -95,7 +98,7 @@ function FlashCard({ word, onRate }: { word: VocabWord; onRate: (q: number) => v
           ].map(btn => (
             <button
               key={btn.label}
-              onClick={() => { setFlipped(false); onRate(btn.quality); }}
+              onClick={() => { setFlipped(false); onRate(btn.quality); if (userId) updateSrs.mutate({ wordId: word.id, quality: btn.quality }); }}
               className={btn.style}
               style={{
                 padding: "12px 8px", borderRadius: 10, fontSize: 13, fontWeight: 600,
@@ -126,6 +129,7 @@ function FlashCard({ word, onRate }: { word: VocabWord; onRate: (q: number) => v
 }
 
 export default function VocabularyPage() {
+  const { user } = useAuth();
   const [category, setCategory] = useState("all");
   const [level, setLevel] = useState("all");
   const [mode, setMode] = useState<"browse" | "flashcards">("browse");
@@ -180,7 +184,7 @@ export default function VocabularyPage() {
           <div className="progress-bar" style={{ marginBottom: 32 }}>
             <div className="progress-fill" style={{ width: `${(cardIndex / filtered.length) * 100}%` }} />
           </div>
-          <FlashCard word={filtered[cardIndex]} onRate={handleRate} />
+          <FlashCard word={filtered[cardIndex]} onRate={handleRate} userId={user?.id} />
         </div>
       </div>
     );
