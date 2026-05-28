@@ -74,10 +74,17 @@ function verifyPassword(password: string, stored: string): boolean {
 }
 
 export async function getSessionUser(req: Request) {
+  const cookieHeader = req.headers.cookie;
   const token = getTokenFromRequest(req);
-  if (!token) return null;
+  if (!token) {
+    console.log("[Auth] No token found. Cookie header:", cookieHeader ? cookieHeader.substring(0, 100) : "none");
+    return null;
+  }
   const payload = await verifyToken(token);
-  if (!payload) return null;
+  if (!payload) {
+    console.log("[Auth] Token verification failed");
+    return null;
+  }
   return db.getUserById(payload.userId);
 }
 
