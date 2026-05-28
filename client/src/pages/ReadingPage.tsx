@@ -223,13 +223,16 @@ function StoryReader({ story, onBack }: { story: Story; onBack: () => void }) {
       ))}
 
       {/* Completion */}
-      {!finished ? (
+      {!finished && !alreadyCompleted ? (
         <div style={{ textAlign: "center", padding: "32px 0" }}>
           <button onClick={() => { setFinished(true); if (user) markComplete.mutate({ storyId: story.id }); }} style={{
             padding: "12px 28px", borderRadius: 10, fontSize: 15, fontWeight: 600,
-            background: "var(--color-accent)", color: "#1a1a1a", border: "none", cursor: "pointer",
+            background: alreadyCompleted ? "rgba(44,157,143,0.15)" : "var(--color-accent)",
+            color: alreadyCompleted ? "var(--color-teal)" : "#1a1a1a",
+            border: alreadyCompleted ? "1px solid rgba(44,157,143,0.3)" : "none",
+            cursor: "pointer",
           }}>
-            ✅ Mark as complete
+            {alreadyCompleted ? "✅ Already completed" : "✅ Mark as complete"}
           </button>
         </div>
       ) : (
@@ -258,7 +261,11 @@ function StoryReader({ story, onBack }: { story: Story; onBack: () => void }) {
 }
 
 export default function ReadingPage() {
+  const { user } = useAuth();
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+
+  const { data: storyProgressData } = trpc.stories.getProgress.useQuery(undefined, { enabled: !!user, staleTime: 0 });
+  const completedIds = new Set(storyProgressData?.filter(p => p.completed).map(p => p.storyId) ?? []);
 
   if (selectedStory) {
     return (
@@ -347,6 +354,15 @@ export default function ReadingPage() {
                   }}>
                     {story.level}
                   </span>
+                  {completedIds.has(story.id) && (
+                    <span style={{
+                      fontSize: 11, fontWeight: 600, padding: "2px 7px", borderRadius: 6,
+                      background: "rgba(44,157,143,0.15)", color: "var(--color-teal)",
+                      border: "1px solid rgba(44,157,143,0.3)",
+                    }}>
+                      ✅ Completed
+                    </span>
+                  )}
                 </div>
                 <div style={{ fontSize: 14, color: "var(--color-foreground-muted)", fontStyle: "italic", marginBottom: 4 }}>
                   {story.titleEn}

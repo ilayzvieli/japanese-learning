@@ -186,7 +186,7 @@ function KanaPage({ type }: { type: "hiragana" | "katakana" }) {
   const [learned, setLearned] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<KanaChar | null>(null);
   const { user } = useAuth();
-  const { data: progressData } = trpc.kana.getProgress.useQuery(undefined, { enabled: !!user });
+  const { data: progressData } = trpc.kana.getProgress.useQuery(undefined, { enabled: !!user, refetchOnWindowFocus: true, staleTime: 0 });
   const updateProgress = trpc.kana.updateProgress.useMutation();
 
   useEffect(() => {

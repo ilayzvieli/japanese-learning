@@ -72,7 +72,7 @@ function getGreeting() {
 export default function DashboardPage() {
   const { user } = useAuth();
   const greeting = getGreeting();
-  const { data: stats } = trpc.dashboard.getStats.useQuery(undefined, { enabled: !!user });
+  const { data: stats, refetch: refetchStats } = trpc.dashboard.getStats.useQuery(undefined, { enabled: !!user, refetchOnWindowFocus: true });
 
   if (!user) {
     return (
@@ -125,12 +125,12 @@ export default function DashboardPage() {
             Follow this recommended order for the best results.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
-            <LessonCard href="/hiragana" icon="🈳" title="Hiragana" subtitle="46 basic characters" progress={0} color="#c9a84c" />
-            <LessonCard href="/katakana" icon="カ" title="Katakana" subtitle="46 character set" progress={0} color="#2a9d8f" />
-            <LessonCard href="/vocabulary" icon="📖" title="Vocabulary" subtitle="200+ N5/N4 words" progress={0} color="#7c5cbf" />
-            <LessonCard href="/kanji" icon="漢" title="Kanji" subtitle="15 essential kanji" progress={0} color="#e8a0b4" />
-            <LessonCard href="/grammar" icon="✍️" title="Grammar" subtitle="8 key patterns" progress={0} color="#0891b2" />
-            <LessonCard href="/reading" icon="📚" title="Reading" subtitle="3 graded stories" progress={0} color="#c9a84c" />
+            <LessonCard href="/hiragana" icon="🈳" title="Hiragana" subtitle="46 basic characters" progress={Math.min(100, ((stats?.kanaLearned ?? 0) / 46) * 100)} color="#c9a84c" />
+            <LessonCard href="/katakana" icon="カ" title="Katakana" subtitle="46 character set" progress={Math.min(100, (Math.max(0, (stats?.kanaLearned ?? 0) - 46) / 46) * 100)} color="#2a9d8f" />
+            <LessonCard href="/vocabulary" icon="📖" title="Vocabulary" subtitle="200+ N5/N4 words" progress={Math.min(100, ((stats?.wordsLearned ?? 0) / 200) * 100)} color="#7c5cbf" />
+            <LessonCard href="/kanji" icon="漢" title="Kanji" subtitle="50 essential kanji" progress={0} color="#e8a0b4" />
+            <LessonCard href="/grammar" icon="✍️" title="Grammar" subtitle="30 key patterns" progress={0} color="#0891b2" />
+            <LessonCard href="/reading" icon="📚" title="Reading" subtitle="5 graded stories" progress={Math.min(100, ((stats?.storiesRead ?? 0) / 5) * 100)} color="#c9a84c" />
           </div>
         </div>
 
