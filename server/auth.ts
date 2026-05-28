@@ -17,17 +17,11 @@ function getJwtSecret() {
   return new TextEncoder().encode(secret);
 }
 
-function isSecureRequest(req: Request): boolean {
-  if (req.protocol === "https") return true;
-  const fwd = req.headers["x-forwarded-proto"];
-  if (!fwd) return false;
-  const protos = Array.isArray(fwd) ? fwd : fwd.split(",");
-  return protos.some(p => p.trim().toLowerCase() === "https");
-}
-
-function setCookie(res: Response, req: Request, token: string) {
-  const secure = isSecureRequest(req);
-  const cookieVal = `${COOKIE_NAME}=${token}; Path=/; Max-Age=${ONE_YEAR_MS / 1000}; HttpOnly; SameSite=${secure ? "None" : "Lax"}${secure ? "; Secure" : ""}`;
+function setCookie(res: Response, _req: Request, token: string) {
+  const isProduction = process.env.NODE_ENV === "production";
+  const cookieVal = isProduction
+    ? `${COOKIE_NAME}=${token}; Path=/; Max-Age=${ONE_YEAR_MS / 1000}; HttpOnly; SameSite=None; Secure`
+    : `${COOKIE_NAME}=${token}; Path=/; Max-Age=${ONE_YEAR_MS / 1000}; HttpOnly; SameSite=Lax`;
   res.setHeader("Set-Cookie", cookieVal);
 }
 
@@ -74,17 +68,10 @@ function verifyPassword(password: string, stored: string): boolean {
 }
 
 export async function getSessionUser(req: Request) {
-  const cookieHeader = req.headers.cookie;
   const token = getTokenFromRequest(req);
-  if (!token) {
-    console.log("[Auth] No token found. Cookie header:", cookieHeader ? cookieHeader.substring(0, 100) : "none");
-    return null;
-  }
+  if (!token) return null;
   const payload = await verifyToken(token);
-  if (!payload) {
-    console.log("[Auth] Token verification failed");
-    return null;
-  }
+  if (!payload) return null;
   return db.getUserById(payload.userId);
 }
 
